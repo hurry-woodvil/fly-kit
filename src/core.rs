@@ -1,6 +1,7 @@
 use anyhow::{Result, anyhow};
 use std::path::PathBuf;
 
+pub mod command;
 pub mod interface;
 pub mod package_json;
 pub mod project;
