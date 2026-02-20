@@ -4,6 +4,7 @@ use std::path::PathBuf;
 pub mod command;
 pub mod interface;
 pub mod modules;
+pub mod npm;
 pub mod package_json;
 pub mod project;
 pub mod utils;
@@ -20,6 +21,9 @@ pub async fn init_project(name: String, dir: Option<PathBuf>) -> Result<()> {
 
     project::create_project_dir(&project_dir).await?;
     project::write_package_json(&project_dir, &name).await?;
+
+    npm::install_dependencies(&project_dir).await?;
+    npm::install_dev_dependencies(&project_dir).await?;
 
     Ok(())
 }
