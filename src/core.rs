@@ -3,8 +3,10 @@ use std::path::PathBuf;
 
 pub mod command;
 pub mod interface;
+pub mod modules;
 pub mod package_json;
 pub mod project;
+pub mod utils;
 
 pub async fn init_project(name: String, dir: Option<PathBuf>) -> Result<()> {
     validate_name(&name)?;

@@ -1,4 +1,5 @@
 use clap;
+use std::path::PathBuf;
 
 #[derive(clap::Parser, Debug)]
 #[command(name = "fly-kit", version, about = "Frontend project generator")]
@@ -13,5 +14,7 @@ pub enum SubCommand {
     Init {
         /// Project name (e.g. my-app)
         project_name: String,
+        #[arg(long)]
+        dir: Option<PathBuf>,
     },
 }

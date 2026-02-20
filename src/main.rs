@@ -7,7 +7,7 @@ async fn main() -> Result<()> {
     let cli = Cli::parse();
 
     match cli.sub_command {
-        SubCommand::Init { project_name } => fly_kit::init(&project_name).await?,
+        SubCommand::Init { project_name, dir } => fly_kit::init(project_name, dir).await?,
     }
 
     Ok(())
