@@ -1,6 +1,7 @@
-use crate::core::utils;
 use anyhow::Result;
 use std::path::{Path, PathBuf};
+
+use crate::core::io::writer::ProjectWriter;
 
 mod about_page_tsx;
 mod components_hello_tsx;
@@ -15,14 +16,7 @@ pub struct TemplateFile {
     content: String,
 }
 
-impl TemplateFile {
-    pub async fn create(&self) -> Result<()> {
-        utils::write(self.dir.join(&self.file_name), &self.content).await?;
-        Ok(())
-    }
-}
-
-pub async fn create_template_files(project_dir: &Path) -> Result<()> {
+pub async fn create_template_files(project_dir: &Path, writer: &dyn ProjectWriter) -> Result<()> {
     let src_dir = project_dir.join("src");
 
     let mut template_files: Vec<TemplateFile> = Vec::new();
@@ -46,7 +40,9 @@ pub async fn create_template_files(project_dir: &Path) -> Result<()> {
     template_files.push(test_hello_test_tsx);
 
     for tf in template_files {
-        tf.create().await?;
+        writer
+            .write_file(tf.dir.join(tf.file_name), &tf.content)
+            .await?;
     }
 
     Ok(())

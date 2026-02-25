@@ -1,38 +1,30 @@
-use anyhow::{Context, Result, anyhow};
+use self::builder::ProjectBuilder;
+use self::feature::Feature;
+use crate::core::{command::package_manager::PackageManager, io::writer::ProjectWriter};
 use std::path::Path;
-use tokio::fs;
 
-mod app;
-mod package_json;
-pub mod packages;
+pub mod app;
+mod builder;
+mod feature;
+pub mod features;
+pub mod model;
+pub mod package_json;
 
-pub async fn create_project(project_dir: &Path, project_name: String) -> Result<()> {
-    // create proeject directory
-    create_project_dir(project_dir).await?;
+pub async fn create_project(
+    project_dir: &Path,
+    features: Vec<Box<dyn Feature>>,
+    writer: &dyn ProjectWriter,
+    pm: &dyn PackageManager,
+    skip_install: bool,
+    skip_create: bool,
+) -> anyhow::Result<()> {
+    let builder = features
+        .into_iter()
+        .fold(ProjectBuilder::new(), |b, f| b.add_feature_boxed(f));
 
-    // create package.json
-    let pkg_json = package_json::PackageJson::new(project_name);
-    pkg_json.write_package_json(project_dir).await?;
-
-    // create template files
-    app::create_template_files(project_dir).await?;
-
-    Ok(())
-}
-
-async fn create_project_dir(project_dir: &Path) -> Result<()> {
-    // check folder exists
-    if fs::try_exists(project_dir).await? {
-        return Err(anyhow!(
-            "Project directory already exists: {}",
-            project_dir.display()
-        ));
-    }
-
-    // create project directory
-    fs::create_dir_all(project_dir)
-        .await
-        .with_context(|| format!("Failed to create directory: {}", project_dir.display()))?;
+    builder
+        .build(project_dir, writer, pm, skip_install, skip_create)
+        .await?;
 
     Ok(())
 }

@@ -1,6 +1,6 @@
+use anyhow::Context;
 use std::{collections::BTreeMap, path::Path};
 
-use anyhow::{Context, Result};
 use serde::Serialize;
 use tokio::fs;
 
@@ -34,7 +34,7 @@ impl PackageJson {
         }
     }
 
-    pub async fn write_package_json(&self, project_dir: &Path) -> Result<()> {
+    pub async fn write_package_json(&self, project_dir: &Path) -> anyhow::Result<()> {
         let json = serde_json::to_string_pretty(self).context("Failed to serialize package.")?;
 
         let path = project_dir.join("package.json");
