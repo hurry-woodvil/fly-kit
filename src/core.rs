@@ -1,4 +1,3 @@
-pub mod command;
-pub mod interface;
-pub mod io;
-pub mod project;
+pub mod application;
+pub mod domain;
+pub mod ports;
